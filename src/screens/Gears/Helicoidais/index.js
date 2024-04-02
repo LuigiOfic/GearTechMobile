@@ -3,45 +3,23 @@ import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { Header } from "../../../components/Header";
 import { LinearGradient } from "expo-linear-gradient";
 import styles from "./Style";
+import { CalculosHelicoidais } from "../../../service/SHelicoidais";
 
-function GearCalculator() {
-  const [moduloHelicoidal, setModuloHelicoidal] = useState("");
+function Helicoidal() {
+
+  const [modulo, setModulo] = useState("");
   const [anguloInclinacao, setAnguloInclinacao] = useState("");
   const [numDentes, setNumDentes] = useState("");
   const [distanciaEixos, setDistanciaEixos] = useState("");
-  const [diametroPrimitivo, setDiametroPrimitivo] = useState("");
-  const [moduloNormal, setModuloNormal] = useState("");
-  const [passoNormal, setPassoNormal] = useState("");
-  const [circuloPrimitivo, setCirculoPrimitivo] = useState("");
-  const [circuloCabeca, setCirculoCabeca] = useState("");
-  const [distanciaEixosInterno, setDistanciaEixosInterno] = useState("");
+  const [resultados, setResultado] = useState(null);
 
-  const calcularDiametroPrimitivo = () => {
-    const Mt = parseFloat(moduloHelicoidal);
-    const B = parseFloat(anguloInclinacao);
-    const Z = parseInt(numDentes);
-    const a = parseFloat(distanciaEixos);
-
-    // Cálculos conforme as fórmulas fornecidas
-    const Mn = Mt / Math.cos(B);
-    const Pn = Math.PI * Mn;
-    const d = Mt * Z;
-    const Da = d + 2 * Mn;
-    const A = (d + Da) / 2;
-    const Pt = Pn / Math.cos(B);
-    const d1 = Pt * Z;
-    const d2 = d - d1;
-    const circuloCabecaInterno = d1 - 2 * Mt;
-    const circuloPeInterno = d2 + 2 * Mt;
-    const distanciaEixosInterno = (circuloPeInterno - circuloCabecaInterno) / 2;
-
-    // Atualizar os estados com os resultados
-    setDiametroPrimitivo(A.toFixed(3));
-    setModuloNormal(Mn.toFixed(3));
-    setPassoNormal(Pn.toFixed(3));
-    setCirculoPrimitivo(d.toFixed(3));
-    setCirculoCabeca(Da.toFixed(3));
-    setDistanciaEixosInterno(distanciaEixosInterno.toFixed(3));
+  const Calculator = () => {
+    const resultadosCalculo = CalculosHelicoidais( modulo, anguloInclinacao, numDentes, distanciaEixos);
+    if (resultadosCalculo) {
+      setResultado(resultadosCalculo);
+    } else {
+      alert("Por favor, preencha todos os campos com valores válidos.");
+    }
   };
 
   return (
@@ -50,14 +28,15 @@ function GearCalculator() {
         style={styles.linear}
         colors={["#E9ECEF", "#DEE2E6", "#CED4DA", "#ADB5BD"]}
       >
-        <Header></Header>
+        <Header />
+        <Text style={styles.titulo}>Dentes Helicoidais</Text>
         <View style={styles.main}>
           <View style={styles.box}>
             <TextInput
               style={styles.input}
-              placeholder="Módulo Helicoidal"
-              value={moduloHelicoidal}
-              onChangeText={(text) => setModuloHelicoidal(text)}
+              placeholder="Módulo"
+              value={modulo}
+              onChangeText={(text) => setModulo(text)}
               keyboardType="numeric"
             />
             <TextInput
@@ -84,29 +63,18 @@ function GearCalculator() {
           </View>
           <TouchableOpacity
             style={styles.button}
-            onPress={calcularDiametroPrimitivo}
+            onPress={Calculator}
           >
             <Text style={styles.txtBtn}>Cálcular</Text>
           </TouchableOpacity>
-
-          {diametroPrimitivo !== "" && (
+          {resultados && (
             <View style={styles.resultContainer}>
-              <Text style={styles.result}>
-                Diâmetro Primitivo: {diametroPrimitivo}
-              </Text>
-              <Text style={styles.result}>Módulo Normal: {moduloNormal}</Text>
-              <Text style={styles.result}>Passo Normal: {passoNormal}</Text>
-              <Text style={styles.result}>
-                Círculo Primitivo: {circuloPrimitivo}
-              </Text>
-              <Text style={styles.result}>
-                Círculo da Cabeça: {circuloCabeca}
-              </Text>
-              <Text style={styles.result}>
-                Distância entre Eixos Interno: {distanciaEixosInterno}
-              </Text>
+              {Object.entries(resultados).map(([key, value]) => (
+                <Text key={key} style={styles.resultText}>{`${key}: ${value}`}</Text>
+              ))}
             </View>
           )}
+    
         </View>
         <TouchableOpacity style={styles.btnRelatorio}>
           <Text style={styles.txtBtn}>Relatório</Text>
@@ -116,4 +84,4 @@ function GearCalculator() {
   );
 }
 
-export default GearCalculator;
+export default Helicoidal;

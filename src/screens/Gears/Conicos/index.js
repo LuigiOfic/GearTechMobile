@@ -3,44 +3,20 @@ import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import styles from "./styles";
 import { LinearGradient } from "expo-linear-gradient";
 import { Header } from "../../../components/Header";
+import { calcularValores } from "../../../service/SConicos";
 
-const MeuProjeto = () => {
+const Conicos = () => {
   const [modulo, setModulo] = useState("");
   const [numeroDentes, setNumeroDentes] = useState("");
   const [resultado, setResultado] = useState(null);
 
-  const calcular = () => {
-    const moduloFloat = parseFloat(modulo);
-    const numeroDentesInt = parseInt(numeroDentes);
-
-    if (isNaN(moduloFloat) || isNaN(numeroDentesInt)) {
-      setResultado("Por favor, insira valores válidos para os parâmetros.");
-      return;
+  const Calculator = () => {
+    const resultadosCalculo = calcularValores(modulo, numeroDentes);
+    if (resultadosCalculo) {
+      setResultado(resultadosCalculo);
+    } else {
+      setResultado("Por favor, preencha todos os campos com valores válidos.");
     }
-
-    const diametroCoroa = moduloFloat * numeroDentesInt;
-    const passoAxial = Math.PI * moduloFloat;
-    const raioTopoCoroa = 0.35 * moduloFloat;
-    const diametroPrimitivo = diametroCoroa + 2 * raioTopoCoroa;
-    const passoCoroa = Math.PI * moduloFloat;
-    const diametroExterno = diametroPrimitivo + 2 * moduloFloat;
-    const raioTopoCoroa2 = 1.25 * raioTopoCoroa;
-    const parafusoSemFim = diametroPrimitivo / moduloFloat;
-    const passoAxialParafuso = Math.PI * moduloFloat;
-    const alturaElevacao = 0.5 * moduloFloat;
-
-    setResultado({
-      diametroCoroa: diametroCoroa.toFixed(3),
-      passoAxial: passoAxial.toFixed(3),
-      raioTopoCoroa: raioTopoCoroa.toFixed(3),
-      diametroPrimitivo: diametroPrimitivo.toFixed(3),
-      passoCoroa: passoCoroa.toFixed(3),
-      diametroExterno: diametroExterno.toFixed(3),
-      raioTopoCoroa2: raioTopoCoroa2.toFixed(3),
-      parafusoSemFim: parafusoSemFim.toFixed(3),
-      passoAxialParafuso: passoAxialParafuso.toFixed(3),
-      alturaElevacao: alturaElevacao.toFixed(3),
-    });
   };
 
   return (
@@ -69,7 +45,7 @@ const MeuProjeto = () => {
             />
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={calcular}>
+          <TouchableOpacity style={styles.button} onPress={Calculator}>
             <Text style={styles.txtBtn}>Calcular</Text>
           </TouchableOpacity>
 
@@ -92,4 +68,4 @@ const MeuProjeto = () => {
   );
 };
 
-export default MeuProjeto;
+export default Conicos;
